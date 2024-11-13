@@ -37,22 +37,27 @@ def get_all_orders(connection):
     cursor=connection.cursor()
     query=("SELECT * from orders")
     cursor.execute(query)
-    respoonse=[]
+    response=[]
     for (order_id,customer_name,total,dt) in cursor:
-        respoonse.append({
+        response.append({
             'order_id':order_id,
             'customer_name':customer_name,
             'total':total,
             'datetime':dt
         })
-    return respoonse
+    cursor.close()
 
+    # append order details in each order
+    for record in response:
+        record['order_details'] = get_order_details(connection, record['order_id'])
+
+    return response
 
 
 def get_order_details(connection, order_id):
     cursor = connection.cursor()
 
-    #query = "SELECT * from order_details where order_id = %s"
+    query = "SELECT * from order_details where order_id = %s"
 
     query = "SELECT order_details.order_id, order_details.quantity, order_details.total_price, "\
             "products.name, products.price_per_unit FROM order_details LEFT JOIN products on " \
@@ -72,7 +77,10 @@ def get_order_details(connection, order_id):
             'product_name': product_name,
             'price_per_unit': price_per_unit,
         })
+    cursor.close()
+
     return records
+
 
     
 

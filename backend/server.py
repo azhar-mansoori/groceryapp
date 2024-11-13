@@ -53,7 +53,7 @@ def insert_order():
     order_id=orders_dao.insert_order(connection,request_payload)
     response=jsonify({
         'order_id':order_id
-    })
+            })
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
